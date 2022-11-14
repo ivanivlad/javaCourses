@@ -1,5 +1,7 @@
 package lesson2;
 
+import java.util.Arrays;
+
 public class Homework {
 
     //Экспертный уровень
@@ -21,6 +23,72 @@ public class Homework {
     //Используемые технологии: String.find, String.replaceAll, String.split, String.join, String.contains, String.substring
     //Регулярные выражения, класс StringBuilder
 
+    public static String MaskHtml(String html){
+
+        if(html.isEmpty())
+        {
+            return html;
+        }
+
+        String[] subText = html.split("<data>|</data>");
+
+        if(subText.length !=3){
+            return html;
+        }
+
+        String dataText = subText[1]; //data block
+
+        String[] contacts = dataText.split(";");
+
+        if(contacts.length > 0)
+       {
+            for (int i = 0; i < contacts.length; i++)
+            {
+                String contact = contacts[i];
+
+                if (contact.matches("^7([0-9]{10})$")) //telephone
+                {
+                   StringBuilder nTelephone = new StringBuilder();
+                   nTelephone.append(contact,0,4);
+                   nTelephone.append("*".repeat(3));
+                   nTelephone.append(contact,7,11);
+
+                   contact = nTelephone.toString();
+
+                } else if (contact.matches("^[A-Za-z0-9+_.\\-]+@(.+)$")) //email
+                {
+                    String[] emailParts = contacts[1].split("@|(\\.)");
+                    contact = String.format("%s*@%s.%s",
+                            emailParts[0].substring(0,emailParts[0].length()-1),
+                            "*".repeat(emailParts[1].length()),
+                            emailParts[2]);
+
+                } else if (contact.matches("^([А-Яа-я]+)\\ ([А-Яа-я]+)(\\ ([А-Яа-я]+))?")) //FullName
+                {
+                    String[] fullName = contact.split(" ");
+
+                    int nFullNameLength = fullName[0].length();
+
+                    fullName[0] = fullName[0].substring(0,1)
+                            .concat("*".repeat(nFullNameLength-2))
+                                    .concat(fullName[0].substring(nFullNameLength-1, nFullNameLength));
+
+                    fullName[2] = fullName[2].substring(0,1).concat(".");
+
+                    contact = String.join(" ", fullName);
+                }else{
+                    throw new IllegalArgumentException("arguments not html string");
+                }
+                contacts[i] = contact;
+
+            }
+
+            return subText[0] + "<data>" + String.join(";", contacts) + "</data>" +subText[2];
+        }
+
+        return html;
+    }
+
     public static void main(String[] args) {
 
         String htmlText = "<client>(Какие то данные)<data>79991113344;test@yandex.ru;Иванов Иван Иванович</data></client>";
@@ -32,55 +100,11 @@ public class Homework {
         String htmlText3 = "<client>(Какие то данные)<data>Иванов Иван Иванович;79991113344</data></client>";
         //"<client>(Какие то данные)<data>И****в Иван И.;7999***3344</data></client>"
 
-        //TODO
-        // выделить блок data
-        // разделить по ;
-        // если только цифры в строке - первые 4 и последние 4
-        // если @ - почта 3 первых и домен с точкой
-        // если ФИО - разделить пробелами, фамилия - первая и последняя буква, Имя полностью, Отчетсво - первая буква
-        //StringBuilder bufText = new StringBuilder(htmlText);
+        String test1 = "ff<data>frfr</data>dd";
 
-        String[] subText = htmlText.split("<data>|</data>");
-        String dataText = subText[1];
-        String[] contacts = dataText.split(";");
-        boolean isEmail = contacts[1].matches("^[A-Za-z0-9+_.\\-]+@(.+)$");
+        String maskedHtml = MaskHtml(htmlText);
 
-        String[] emailParts = contacts[1].split("@");
-        String[] domainParts = emailParts[1].split("\\.");
-        String nEmail = emailParts[0].substring(0,emailParts[0].length())
-                + "*@"
-                + "*".repeat(domainParts[0].length())
-                + "."
-                + domainParts[1];
-
-        boolean isTelephone = contacts[0].matches("^7([0-9]{10})$");
-        //телефон
-        String newT = contacts[0].substring(0,4) + "*".repeat(3) + contacts[0].substring(6,10);
-        //почта - 1 символ перед собакой, символы между собакой и точкой
-
-        boolean isFullName = contacts[2].matches("^([А-Яа-я]+)\\ ([А-Яа-я]+)(\\ ([А-Яа-я]+))?");
-        String[] fullName = contacts[2].split(" ");
-
-        String nFullName = fullName[0];
-
-        int nFullNameLength = fullName[0].length();
-
-        /* работаеющий вариант на regexp
-        String nFullName2 = nFullName.replaceAll(".", "*")
-                .replaceFirst("^.", nFullName.substring(0,1))
-                .replaceFirst(".$", nFullName.substring(nFullNameLength-1,nFullNameLength));*/
-        //более простой вариант
-        String nFullName2 = nFullName.substring(0,1)
-                + "*".repeat(nFullNameLength-2)
-                + nFullName.substring(nFullNameLength-1,nFullNameLength);
-
-
-        String nSecName = fullName[1].substring(0,1).concat(".");
-
-
-
-        //String maskedText = "";
-        //System.out.println(maskedText);
-
+        System.out.println(htmlText);
+        System.out.println(maskedHtml);
     }
 }
