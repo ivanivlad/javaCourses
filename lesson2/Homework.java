@@ -50,22 +50,20 @@ public class Homework {
 
             if (contact.matches("^7([0-9]{10})$")) //telephone
             {
-                StringBuilder nTelephone = new StringBuilder();
-                nTelephone.append(contact, 0, 4);
-                nTelephone.append("*".repeat(3));
-                nTelephone.append(contact, 7, 11);
+                StringBuilder nTelephone = new StringBuilder(contact);
+                nTelephone.replace(4,7, "*".repeat(3)) ;
 
                 contact = nTelephone.toString();
 
             } else if (contact.matches("^[A-Za-z0-9+_.\\-]+@(.+)$")) //email
             {
-                String[] emailParts = contacts[1].split("@|(\\.)");
+                String[] emailParts = contact.split("@|(\\.)");
                 contact = String.format("%s*@%s.%s",
                         emailParts[0].substring(0, emailParts[0].length() - 1),
                         "*".repeat(emailParts[1].length()),
                         emailParts[2]);
 
-            } else if (contact.matches("^([А-Яа-я]+)\\ ([А-Яа-я]+)(\\ ([А-Яа-я]+))?")) //FullName
+            } else if (contact.matches("^([А-Яа-я]+) ([А-Яа-я]+) ([А-Яа-я]+)?")) //FullName
             {
                 String[] fullName = contact.split(" ");
 
