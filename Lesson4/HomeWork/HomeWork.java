@@ -4,6 +4,7 @@ import Lesson4.HomeWork.expert.GeneratorExpertHomework;
 
 import java.util.*;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class HomeWork {
     public static void main(String[] args) {
@@ -42,20 +43,27 @@ public class HomeWork {
 
         Pattern compile = Pattern.compile("М\\d{3}АВ\\d{2,3}");
 
-        HashSet<String> cb= new HashSet<>();
+        Set<String> result= new HashSet<>();
 
+        //Вариант решения на cycle
         for(Map<String, String[]> h : data.values()) {
             for(String[] s : h.values()) {
                 for(String m : s){
                     if (compile.matcher(m).find()) {
-                        cb.add(m);
+                        result.add(m);
                     }
-
                 }
             }
         }
 
-        System.out.println(cb);
+        System.out.printf("On cycle: %s\n", result);
 
+        //Вариант решения на stream
+        Set<String> collect = data.values().stream()
+                .flatMap(x -> x.values().stream())
+                .flatMap(z -> Arrays.stream(z).filter(v -> v.matches("М\\d{3}АВ\\d{2,3}")))
+                .collect(Collectors.toCollection(HashSet::new));
+
+        System.out.printf("On stream: %s\n", collect);
     }
 }
