@@ -22,7 +22,7 @@ public class CarShop implements Market {
         try {
             car.saleCar();
             System.out.println("Хочешь купить авто?");
-        } catch (negativePriceException e){
+        } catch (NegativePriceException e){
             System.out.println("Неизвестна мне");
             System.out.println("Давайте посмотрим другое авто?");
         }

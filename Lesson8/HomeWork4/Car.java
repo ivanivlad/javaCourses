@@ -16,10 +16,10 @@ public class Car implements Market{
     }
 
     @Override
-    public void saleCar() throws negativePriceException {
+    public void saleCar() throws NegativePriceException {
 
         if (price < 0){
-            throw new negativePriceException();
+            throw new NegativePriceException();
         }else {
             System.out.println(price);
         }
